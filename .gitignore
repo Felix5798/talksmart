@@ -11,3 +11,4 @@ frontend/dist/
 .idea/
 *.log
 .DS_Store
+.chainlit/
