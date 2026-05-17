@@ -33,3 +33,10 @@ async def embed_texts(texts: list[str], *, settings: Settings | None = None) -> 
         return client.embed_documents(texts)
 
     return await asyncio.to_thread(_run)
+
+
+async def embed_query(text: str, *, settings: Settings | None = None) -> list[float]:
+    vectors = await embed_texts([text], settings=settings)
+    if not vectors:
+        raise ValueError("empty embedding for query")
+    return vectors[0]

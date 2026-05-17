@@ -8,6 +8,7 @@ from chromadb.api.models.Collection import Collection
 
 from config import Settings, get_settings
 from kb.chunking import TextChunk
+from kb.schemas import RetrievedChunk
 
 
 def create_chroma_client(settings: Settings | None = None) -> HttpClient:
@@ -98,3 +99,46 @@ class VectorStore:
             documents=documents,
             metadatas=metadatas,
         )
+
+    def similarity_search(
+        self,
+        query_embedding: list[float],
+        *,
+        k: int = 30,
+        where: dict[str, str | int] | None = None,
+    ) -> list[RetrievedChunk]:
+        total = self._collection.count()
+        if total == 0:
+            return []
+
+        n = min(k, total)
+        kwargs: dict = {
+            "query_embeddings": [query_embedding],
+            "n_results": n,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        if where:
+            kwargs["where"] = where
+
+        raw = self._collection.query(**kwargs)
+        ids = raw.get("ids") or [[]]
+        documents = raw.get("documents") or [[]]
+        metadatas = raw.get("metadatas") or [[]]
+        distances = raw.get("distances") or [[]]
+
+        results: list[RetrievedChunk] = []
+        for i, doc_id in enumerate(ids[0]):
+            text = documents[0][i] if i < len(documents[0]) else ""
+            meta = metadatas[0][i] if i < len(metadatas[0]) else {}
+            dist = distances[0][i] if i < len(distances[0]) else None
+            if not text:
+                continue
+            results.append(
+                RetrievedChunk(
+                    id=str(doc_id),
+                    text=str(text),
+                    metadata=dict(meta or {}),
+                    distance=float(dist) if dist is not None else None,
+                )
+            )
+        return results

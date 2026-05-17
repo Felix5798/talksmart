@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     embedding_model: str = "text-embedding-v3"
     kb_chunk_size: int = 500
     kb_chunk_overlap: int = 80
+    kb_retrieval_top_k: int = 30
+    kb_rerank_top_n: int = 5
+    kb_rerank_min_score: float = 0.2
+    rerank_model: str = "qwen3-rerank"
+    kb_log_level: str = "INFO"  # DEBUG to see full chunk text in RAG logs
 
 
 @lru_cache

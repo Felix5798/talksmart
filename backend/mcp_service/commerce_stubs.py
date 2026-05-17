@@ -41,5 +41,5 @@ async def stub_kb_answer(*, question: str, history_snippet: str = "") -> str:
     return (
         "[stub] 知识库占位回答。\n"
         f"您的问题摘要：{question[:200]!r}\n"
-        "正式环境将走 RAG（检索 + 重排 + 引用）。"
+        "请配置 DASHSCOPE_API_KEY 与 CHROMA_URL 以启用 RAG（检索 + qwen3-rerank + 引用）。"
     )

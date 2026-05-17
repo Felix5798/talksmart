@@ -6,6 +6,7 @@ from typing import Any, Literal, TypedDict
 from langgraph.graph import END, START, StateGraph
 
 from config import Settings, get_settings
+from kb.retrieval import kb_system_prompt, log_llm_prompt, retrieve_for_qa
 from mcp_service.commerce_stubs import stub_kb_answer
 
 from .intent import route_intent
@@ -60,31 +61,40 @@ async def knowledge_node(state: ChatbotState) -> dict[str, Any]:
     prior = _history_for_llm(history, user_text)
     snippet = _history_snippet(prior)
 
-    if settings.dashscope_api_key:
-        try:
-            from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+    if not settings.dashscope_api_key:
+        reply = await stub_kb_answer(question=user_text, history_snippet=snippet)
+        return {"reply": reply}
 
-            msgs: list[Any] = [
-                SystemMessage(
-                    content=(
-                        "你是电商智能客服。当前知识库为占位模式，请用简短中文礼貌回答用户；"
-                        "若涉及具体订单/物流，提示用户可说明订单或运单。"
-                    )
-                )
-            ]
-            for m in prior:
-                c = str(m.get("content", ""))
-                if m.get("role") == "user":
-                    msgs.append(HumanMessage(content=c))
-                elif m.get("role") == "assistant":
-                    msgs.append(AIMessage(content=c))
-            msgs.append(HumanMessage(content=user_text))
-            model = _tongyi_client(api_key=settings.dashscope_api_key, model=settings.llm_model)
-            res = await model.ainvoke(msgs)
-            reply = str(getattr(res, "content", res))
-        except Exception:
-            reply = await stub_kb_answer(question=user_text, history_snippet=snippet)
-    else:
+    try:
+        from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
+        chunks = await retrieve_for_qa(
+            user_text,
+            conversation_id=state.get("conversation_id"),
+            uid=state.get("uid"),
+            settings=settings,
+        )
+        system_content = kb_system_prompt(chunks)
+        log_llm_prompt(
+            conversation_id=state.get("conversation_id"),
+            uid=state.get("uid"),
+            system_content=system_content,
+            history=prior,
+            user_text=user_text,
+        )
+
+        msgs: list[Any] = [SystemMessage(content=system_content)]
+        for m in prior:
+            c = str(m.get("content", ""))
+            if m.get("role") == "user":
+                msgs.append(HumanMessage(content=c))
+            elif m.get("role") == "assistant":
+                msgs.append(AIMessage(content=c))
+        msgs.append(HumanMessage(content=user_text))
+        model = _tongyi_client(api_key=settings.dashscope_api_key, model=settings.llm_model)
+        res = await model.ainvoke(msgs)
+        reply = str(getattr(res, "content", res))
+    except Exception:
         reply = await stub_kb_answer(question=user_text, history_snippet=snippet)
 
     return {"reply": reply}

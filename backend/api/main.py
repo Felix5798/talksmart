@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator
 
@@ -16,6 +17,17 @@ from graph.chatbot_graph import get_compiled_graph
 _store: ChatStore | None = None
 
 
+def _configure_logging() -> None:
+    settings = get_settings()
+    level = getattr(logging, settings.kb_log_level.upper(), logging.INFO)
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        force=True,
+    )
+
+
 def store() -> ChatStore:
     global _store
     if _store is None:
@@ -25,6 +37,7 @@ def store() -> ChatStore:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _configure_logging()
     await store().connect()
     try:
         yield
