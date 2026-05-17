@@ -1,4 +1,4 @@
-"""Commerce MCP（订单 / 物流 / 转人工）— 与 `run_mcp.py`（stdio）、`run_mcp_http.py`（8200）共用工具定义。"""
+"""Commerce MCP（订单 / 物流 / 转人工）— 与 `run/run_mcp.py`（stdio）、`run/run_mcp_http.py`（8200）共用工具定义。"""
 
 from __future__ import annotations
 

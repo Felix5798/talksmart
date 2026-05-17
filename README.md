@@ -6,7 +6,7 @@ Vue3 前端 + FastAPI 后端 + LangGraph 编排 + MongoDB 多轮滑动窗口 + M
 
 ## 目录
 
-- `backend/` — `api/`（FastAPI）、`graph/`（LangGraph / 意图 / 会话 / MCP 调用）、`mcp_service/`（MCP 与 stub）、`config/`、`run_mcp.py`（stdio / Cursor）、`run_mcp_http.py`（8200）
+- `backend/` — `api/`（FastAPI）、`graph/`（LangGraph / 意图 / 会话 / MCP 调用）、`mcp_service/`（MCP 与 stub）、`config/`、`run/`（MCP、Chroma UI、知识库入库等启动脚本）
 - `frontend/` — Vue3 + Vite
 
 ## 环境变量
@@ -16,7 +16,7 @@ Vue3 前端 + FastAPI 后端 + LangGraph 编排 + MongoDB 多轮滑动窗口 + M
 - `DASHSCOPE_API_KEY` — 可选；未配置时知识类走占位文案
 - `MONGODB_URI` / `MONGODB_DB` — 会话与消息（默认库名 `ecommerce_chatbot`）
 - `DATABASE_URL` — 预留 MySQL，当前骨架未使用
-- `MCP_STREAMABLE_HTTP_URL` — 订单/物流/转人工走 MCP 的地址，默认 `http://127.0.0.1:8200/mcp`（需先启动 `run_mcp_http.py`）
+- `MCP_STREAMABLE_HTTP_URL` — 订单/物流/转人工走 MCP 的地址，默认 `http://127.0.0.1:8200/mcp`（需先启动 `run/run_mcp_http.py`）
 
 **勿将真实密钥提交到 Git。**
 
@@ -39,7 +39,7 @@ Copy-Item .env.example .env   # 按需编辑 Mongo、MCP URL 等
 ```powershell
 cd backend
 $env:PYTHONPATH = (Resolve-Path .).Path
-python run_mcp_http.py
+python run/run_mcp_http.py
 ```
 
 2. **FastAPI（8100）**
@@ -58,7 +58,7 @@ python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8100
 
 ```powershell
 $env:PYTHONPATH = (Resolve-Path .).Path
-python run_mcp.py
+python run/run_mcp.py
 ```
 
 **Cursor MCP 示例**（`command` 改为本机 venv 的 `python.exe`）：
@@ -68,7 +68,7 @@ python run_mcp.py
   "mcpServers": {
     "ecommerce-commerce": {
       "command": "D:\\DevelopProject\\talksmart\\.venv\\Scripts\\python.exe",
-      "args": ["D:\\DevelopProject\\talksmart\\backend\\run_mcp.py"],
+      "args": ["D:\\DevelopProject\\talksmart\\backend\\run\\run_mcp.py"],
       "cwd": "D:\\DevelopProject\\talksmart\\backend",
       "env": {
         "PYTHONPATH": "D:\\DevelopProject\\talksmart\\backend"

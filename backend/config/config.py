@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     )
 
     dashscope_api_key: str | None = None
-    mongodb_uri: str = "mongodb://localhost:27017"
-    mongodb_db: str = "ecommerce_chatbot"
+    mongodb_uri: str
+    mongodb_db: str
     database_url: str | None = None  # reserved for MySQL / SQLAlchemy
 
     llm_model: str = "qwen-turbo"
@@ -25,8 +25,16 @@ class Settings(BaseSettings):
 
     default_uid: str = "1001"
 
-    # Commerce MCP (Streamable HTTP), separate process — see `run_mcp_http.py` (default port 8200).
+    # Commerce MCP (Streamable HTTP), separate process — see `run/run_mcp_http.py` (default port 8200).
     mcp_streamable_http_url: str = "http://127.0.0.1:8200/mcp"
+
+    # Knowledge base (remote Chroma + DashScope embeddings)
+    chroma_url: str
+    chroma_auth_token: str | None = None
+    chroma_collection: str = "kb_ecommerce_v1"
+    embedding_model: str = "text-embedding-v3"
+    kb_chunk_size: int = 500
+    kb_chunk_overlap: int = 80
 
 
 @lru_cache
