@@ -6,7 +6,7 @@ Run from backend/:
 
 Or:
 
-    python run_chroma_ui.py
+    python run/run_chroma_ui.py
 """
 
 from __future__ import annotations
@@ -81,7 +81,7 @@ async def _render_overview() -> None:
     ).send()
 
     if count == 0:
-        await cl.Message(content="集合为空，请先运行 `python scripts/run_kb_pipeline.py` 入库。").send()
+        await cl.Message(content="集合为空，请先运行 `python run/run_kb_pipeline.py` 入库。").send()
         return
 
     data = collection.get(include=["documents", "metadatas"])

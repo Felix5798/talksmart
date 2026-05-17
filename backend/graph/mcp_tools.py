@@ -1,7 +1,7 @@
 """通过 MCP（Streamable HTTP）调订单 / 物流 / 转人工工具。
 
 意图在 `graph.intent` 与 LangGraph 路由里完成；本模块只负责 HTTP 连到独立 MCP 进程
-（默认 `http://127.0.0.1:8200/mcp`，见 `run_mcp_http.py`），`initialize` + `call_tool` 后返回 dict。"""
+（默认 `http://127.0.0.1:8200/mcp`，见 `run/run_mcp_http.py`），`initialize` + `call_tool` 后返回 dict。"""
 
 from __future__ import annotations
 

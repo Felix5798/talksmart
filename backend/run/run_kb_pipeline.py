@@ -4,11 +4,11 @@
 Usage (from backend/, with venv active):
 
     $env:PYTHONPATH = (Resolve-Path .).Path
-    python scripts/run_kb_pipeline.py
+    python run/run_kb_pipeline.py
 
 Optional:
 
-    python scripts/run_kb_pipeline.py --file kb/samples/return_policy.md
+    python run/run_kb_pipeline.py --file kb/samples/return_policy.md
 """
 
 from __future__ import annotations

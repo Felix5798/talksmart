@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     default_uid: str = "1001"
 
-    # Commerce MCP (Streamable HTTP), separate process — see `run_mcp_http.py` (default port 8200).
+    # Commerce MCP (Streamable HTTP), separate process — see `run/run_mcp_http.py` (default port 8200).
     mcp_streamable_http_url: str = "http://127.0.0.1:8200/mcp"
 
     # Knowledge base (remote Chroma + DashScope embeddings)
